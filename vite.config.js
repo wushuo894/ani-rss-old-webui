@@ -1,0 +1,124 @@
+import {defineConfig} from 'vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+import compression from 'vite-plugin-compression'
+import {readFileSync} from 'node:fs'
+import {createWebUIManifest} from './scripts/webui-manifest.mjs'
+
+let serverHost = process.env['SERVER_HOST'];
+
+let dirname = import.meta.dirname;
+let packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
+
+let webUIManifest = createWebUIManifest({
+    owner: 'wushuo894',
+    repo: packageJson.name,
+    version: packageJson.version,
+    filename: `${packageJson.name}.zip`
+})
+
+let webUIManifestPlugin = () => ({
+    name: 'ani-rss-webui-manifest',
+    generateBundle() {
+        this.emitFile({
+            type: 'asset',
+            fileName: 'webui.json',
+            source: `${JSON.stringify(webUIManifest, null, 2)}\n`
+        })
+    }
+})
+
+export default defineConfig({
+    base: './',
+    server: {
+        port: 37789,
+        proxy: {
+            '/api': {
+                target: serverHost ? serverHost : 'http://127.0.0.1:7789',
+                changeOrigin: false
+            }
+        }
+    },
+    plugins: [
+        webUIManifestPlugin(),
+        vue(),
+        AutoImport({
+            imports: ['vue'],
+            resolvers: [ElementPlusResolver()]
+        }),
+        Components({
+            resolvers: [ElementPlusResolver({
+                importStyle: 'css',
+            })]
+        }),
+        compression({
+            // 输出压缩日志
+            verbose: true,
+            // 是否禁用压缩
+            disable: false,
+            // 对超过10KB的文件进行压缩
+            threshold: 10240,
+            // 使用gzip压缩
+            algorithm: 'gzip',
+            // 压缩后文件的扩展名
+            ext: '.gz'
+        }),
+    ],
+    resolve: {
+        alias: {
+            '@': path.resolve(dirname, './src/')
+        }
+    },
+    build: {
+        chunkSizeWarningLimit: 1024,
+        rollupOptions: {
+            input: {
+                main: path.resolve(dirname, 'index.html'),
+                bgmOauthCallback: path.resolve(dirname, 'bgm-oauth-callback.html')
+            },
+            output: {
+                codeSplitting: {
+                    groups: [
+                        {
+                            name: 'vue',
+                            test: /node_modules[\\/](vue|@vueuse[\\/]core|@vicons[\\/]fa)/,
+                        },
+                        {
+                            name: 'utils',
+                            test: /node_modules[\\/](js-md5|markdown-it|markdown-it-github-alerts)/,
+                        },
+                        {
+                            name: 'element-icon',
+                            test: /node_modules[\\/](@element-plus[\\/]icons-vue)/,
+                        },
+                        {
+                            name: 'artplayer',
+                            test: /node_modules[\\/](artplayer|artplayer-plugin-multiple-subtitles)/,
+                        },
+                        {
+                            name: 'shiki',
+                            test: /node_modules[\\/]shiki/,
+                        },
+                        {
+                            name: 'element-plus',
+                            test: /node_modules[\\/]element-plus/
+                        }
+                    ]
+                },
+                chunkFileNames: () => {
+                    return `assets/[name]-[hash].js`;
+                }
+            }
+        },
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: false,
+                drop_debugger: true,
+            }
+        }
+    }
+})

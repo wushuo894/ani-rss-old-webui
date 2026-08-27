@@ -1,0 +1,61 @@
+name: release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@v2
+        with:
+          runtime: node@24
+          install: false
+
+      - name: Resolve version from package.json
+        id: release
+        run: |
+          version="$(jq -r '.version' package.json)"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "package.json version must match X.Y.Z" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build release
+        run: pnpm build
+
+      - name: Verify WebUI package
+        run: pnpm verify
+
+      - name: Create uploadable archive
+        working-directory: dist
+        run: zip -q -r ../ani-rss-old-webui.zip .
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: ${{ steps.release.outputs.tag }}
+          body_path: UPDATE.md
+          tag_name: ${{ steps.release.outputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ani-rss-old-webui.zip
