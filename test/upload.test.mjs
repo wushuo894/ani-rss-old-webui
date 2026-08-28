@@ -1,11 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {
-    acceptsFile,
-    fileExtension,
-    normalizeExtensions,
-    parseUploadResponse
-} from '../src/js/upload.js'
+import {acceptsFile, fileExtension, normalizeExtensions, parseUploadResponse} from '../src/js/upload.js'
 
 test('normalizes file extensions without relying on MIME types', () => {
     assert.deepEqual(normalizeExtensions(['.ZIP', ' json ', '']), ['zip', 'json'])

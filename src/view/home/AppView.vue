@@ -48,13 +48,8 @@
       <div class="add-button">
         <div style="margin: 0 4px;">
           <el-dropdown trigger="click">
-            <el-button bg text type="primary">
-              <el-icon :class="elIconClass">
-                <Plus/>
-              </el-icon>
-              <template v-if="isNotMobile">
-                添加
-              </template>
+            <el-button bg text type="primary" icon="Plus" class="auto-button">
+              添加
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
@@ -69,59 +64,34 @@
           </el-dropdown>
         </div>
         <div style="margin: 0 4px;">
-          <el-button bg text @click="torrentsInfosRef?.show">
-            <el-icon :class="elIconClass">
-              <Download/>
-            </el-icon>
-            <template v-if="isNotMobile">
-              下载
-            </template>
+          <el-button bg text @click="torrentsInfosRef?.show" icon="Download" class="auto-button">
+            下载
           </el-button>
         </div>
         <div style="margin: 0 4px;">
           <PopconfirmView title="立即刷新全部订阅?" @confirm="refreshAni">
             <template #reference>
-              <el-button bg text>
-                <el-icon :class="elIconClass">
-                  <Refresh/>
-                </el-icon>
-                <template v-if="isNotMobile">
-                  刷新
-                </template>
+              <el-button bg text icon="Refresh" class="auto-button">
+                刷新
               </el-button>
             </template>
           </PopconfirmView>
         </div>
         <div style="margin: 0 4px;">
-          <el-button text bg @click="manageRef?.show">
-            <el-icon :class="elIconClass">
-              <Fold/>
-            </el-icon>
-            <template v-if="isNotMobile">
-              管理
-            </template>
+          <el-button text bg @click="manageRef?.show" icon="Fold" class="auto-button">
+            管理
           </el-button>
         </div>
         <div style="margin: 0 4px;">
           <el-badge :is-dot="about.update" class="item">
-            <el-button @click="configRef?.show(about.update)" text bg>
-              <el-icon :class="elIconClass">
-                <Setting/>
-              </el-icon>
-              <template v-if="isNotMobile">
-                设置
-              </template>
+            <el-button @click="configRef?.show(about.update)" text bg icon="Setting" class="auto-button">
+              设置
             </el-button>
           </el-badge>
         </div>
         <div style="margin-left: 4px;">
-          <el-button @click="logsRef?.show" text bg>
-            <el-icon :class="elIconClass">
-              <Tickets/>
-            </el-icon>
-            <template v-if="isNotMobile">
-              日志
-            </template>
+          <el-button @click="logsRef?.show" text bg icon="Tickets" class="auto-button">
+            日志
           </el-button>
         </div>
       </div>
@@ -134,7 +104,6 @@
 
 <script setup>
 import {onMounted, ref} from "vue";
-import {Fold, Plus, Refresh, Setting, Tickets} from "@element-plus/icons-vue"
 import ConfigView from "./ConfigView.vue";
 import ListView from "./ListView.vue";
 import AddView from "./AddView.vue";
@@ -145,7 +114,7 @@ import ManageView from "./ManageView.vue";
 import {useLocalStorage} from "@vueuse/core";
 import CollectionView from "./CollectionView.vue";
 import TorrentsInfosView from "./TorrentsInfosView.vue";
-import {elIconClass, initLayout, isNotMobile} from "@/js/global.js";
+import {initLayout} from "@/js/global.js";
 import * as http from "@/js/http.js";
 
 const listRef = ref()

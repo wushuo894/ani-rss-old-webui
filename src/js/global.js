@@ -64,13 +64,6 @@ const colorChange = (v) => {
 const isNotMobile = ref(false)
 
 /**
- * el-icon的class
- *
- * 自动适应移动布局
- */
-const elIconClass = ref('')
-
-/**
  * 主题初始化
  */
 const initTheme = () => {
@@ -106,13 +99,6 @@ const initLayout = () => {
 
     // 是否非移动设备
     isNotMobile.value = app.offsetWidth > 800
-
-    if (isNotMobile.value) {
-        elIconClass.value = 'el-icon--left'
-    } else {
-        // 用以控制图标与文字的间距 当为移动设备时便不需要间距了
-        elIconClass.value = ''
-    }
 }
 
 /**
@@ -173,7 +159,6 @@ export {
     color,
     colorChange,
     isNotMobile,
-    elIconClass,
     init,
     initTheme,
     initLayout,
