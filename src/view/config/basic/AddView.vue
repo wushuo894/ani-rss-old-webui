@@ -62,9 +62,9 @@
       <el-switch v-model:model-value="props.config.importExclude" :disabled="props.config.enabledExclude"/>
     </el-form-item>
     <el-form-item label="封面质量">
-      <el-select v-model="props.config['bgmImage']" class="width-150">
-        <el-option v-for="item in ['small','grid','large','medium','common']" :key="item"
-                   :value="item"></el-option>
+      <el-select v-model="props.config['bgmImageSize']" class="width-150">
+        <el-option v-for="item in ['large','medium','common']" :key="item"
+                   :value="item"/>
       </el-select>
     </el-form-item>
     <el-form-item label="自定义集数规则">
