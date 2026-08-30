@@ -47,6 +47,7 @@ import nord from 'shiki/themes/nord'
 import wasm from 'shiki/wasm'
 import {createHighlighterCore} from "shiki";
 import * as http from "@/js/http.js";
+import {formatTime} from "@/js/format.js";
 
 let highlighter = undefined
 onMounted(async () => {
@@ -75,7 +76,11 @@ const getHtmlLogs = async () => {
   if (selectLoggerNames.value.length) {
     log = log.filter(it => selectLoggerNames.value.indexOf(it['loggerName']) > -1)
   }
-  let code = log.map(it => it['message']).join('\r\n');
+  let code = log.map(it => {
+    const {ts, level, threadName, loggerName, message} = it
+
+    return `${formatTime(ts)} ${level} [${threadName}] ${loggerName} - ${message}`
+  }).join('\r\n');
   htmlLogs.value = highlighter.codeToHtml(code, {
     lang: 'log',
     theme: 'nord'
