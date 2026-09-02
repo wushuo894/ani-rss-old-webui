@@ -1,7 +1,7 @@
 {
   "name": "ani-rss-old-webui",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "ANI-RSS legacy WebUI extracted from ani-rss 207831dd",
   "type": "module",
   "packageManager": "pnpm@11.22.0",
